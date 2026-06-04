@@ -1,0 +1,19 @@
+# Environments
+.env
+.env.local
+.env.*.local
+
+# Python caches & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# App-specific caches & local indices
+.index_cache.json
+backend/.index_cache.json
+data/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

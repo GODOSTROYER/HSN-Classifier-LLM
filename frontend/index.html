@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered HSN Code Classification using Gemma 4 31B with RAG retrieval and GRI methodology">
+  <title>HSN Classifier — Agentic Workflow</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- ═══ Header ═══ -->
+    <header class="app-header">
+      <div class="logo-badge">
+        <span class="dot"></span>
+        <span>Gemma 4 · 31B · Agentic RAG</span>
+      </div>
+      <h1 class="app-title">HSN Code Classifier</h1>
+      <p class="app-subtitle">AI-powered customs classification with GRI methodology &amp; RAG retrieval</p>
+    </header>
+
+    <!-- ═══ Stats Bar ═══ -->
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-item">
+        <span class="stat-value" id="statChunks">—</span>
+        <span class="stat-label">Indexed Chunks</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="statHeadings">—</span>
+        <span class="stat-label">HS Headings</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="statChapters">—</span>
+        <span class="stat-label">Chapters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" id="statModel">Gemma 4</span>
+        <span class="stat-label">LLM Model</span>
+      </div>
+    </div>
+
+    <!-- ═══ Input Section ═══ -->
+    <section class="input-section">
+      <div class="input-card">
+        <label class="input-label" for="productInput">Product Description</label>
+        <div class="input-wrapper">
+          <textarea 
+            id="productInput" 
+            class="product-input"
+            placeholder="Describe the product to classify... e.g., 'A portable laptop computer with 15.6 inch screen, Intel processor, 16GB RAM, running Windows OS, weighing 2.1 kg'"
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="input-actions">
+          <div class="examples-row">
+            <button class="example-chip" data-example="Live cattle for breeding purposes">🐄 Live cattle</button>
+            <button class="example-chip" data-example="Portable laptop computer with 15.6 inch display, Intel i7 processor, 16GB RAM, 512GB SSD, running Windows 11">💻 Laptop</button>
+            <button class="example-chip" data-example="Men's cotton T-shirt, knitted, with printed design, size XL">👕 Cotton T-shirt</button>
+            <button class="example-chip" data-example="Lithium-ion rechargeable battery pack, 5000mAh, for mobile phones">🔋 Li-ion Battery</button>
+            <button class="example-chip" data-example="Organic raw cane sugar, unrefined, in 50kg bags">🍬 Raw Sugar</button>
+            <button class="example-chip" data-example="Stainless steel kitchen knife set, 8 pieces, with wooden block">🔪 Knife Set</button>
+          </div>
+          <button id="classifyBtn" class="classify-btn" onclick="startClassification()">
+            <span class="btn-icon">⚡</span>
+            <span class="spinner"></span>
+            <span>Classify</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Pipeline Progress ═══ -->
+    <section class="pipeline-section" id="pipelineSection">
+      <div class="section-title">
+        <span class="icon">🔄</span>
+        Classification Pipeline
+      </div>
+      
+      <div class="overall-progress">
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-label">
+          <span id="progressStepLabel">Initializing...</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+      </div>
+
+      <div class="pipeline-steps" id="pipelineSteps">
+        <div class="pipeline-step" data-step="1" id="step-1">
+          <div class="step-indicator">1</div>
+          <div class="step-content">
+            <div class="step-name">🗺️ Keyword Routing</div>
+            <div class="step-detail">Matching product to candidate chapters via routing map</div>
+          </div>
+          <span class="step-time" id="step-1-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="2" id="step-2">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <div class="step-name">🔍 BM25 Retrieval</div>
+            <div class="step-detail">Searching across all indexed HS headings</div>
+          </div>
+          <span class="step-time" id="step-2-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="3" id="step-3">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <div class="step-name">🤖 LLM Reranking</div>
+            <div class="step-detail">Gemma 4 scoring candidate relevance</div>
+          </div>
+          <span class="step-time" id="step-3-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="4" id="step-4">
+          <div class="step-indicator">4</div>
+          <div class="step-content">
+            <div class="step-name">📚 Context Assembly</div>
+            <div class="step-detail">Loading GIR + chapter notes + heading details</div>
+          </div>
+          <span class="step-time" id="step-4-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="5" id="step-5">
+          <div class="step-indicator">5</div>
+          <div class="step-content">
+            <div class="step-name">⚖️ GRI Classification</div>
+            <div class="step-detail">Applying GRI 1–6 methodology via Gemma 4</div>
+          </div>
+          <span class="step-time" id="step-5-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="6" id="step-6">
+          <div class="step-indicator">6</div>
+          <div class="step-content">
+            <div class="step-name">✅ Confidence Scoring</div>
+            <div class="step-detail">Validating and calibrating result confidence</div>
+          </div>
+          <span class="step-time" id="step-6-time"></span>
+        </div>
+        <div class="pipeline-step" data-step="7" id="step-7">
+          <div class="step-indicator">7</div>
+          <div class="step-content">
+            <div class="step-name">📋 Output Generation</div>
+            <div class="step-detail">Formatting formal Classification Opinion</div>
+          </div>
+          <span class="step-time" id="step-7-time"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Results Section ═══ -->
+    <section class="results-section" id="resultsSection">
+      
+      <!-- Hero card -->
+      <div class="result-hero" id="resultHero">
+        <div class="logo-badge" style="margin-bottom: 8px">
+          <span class="dot"></span>
+          <span>Classification Result</span>
+        </div>
+        <div class="hsn-code-display" id="hsnCodeDisplay">—</div>
+        <div class="hsn-description" id="hsnDescription">—</div>
+        <div class="confidence-badge" id="confidenceBadge">
+          <span id="confidenceIcon">●</span>
+          <span id="confidenceText">—</span>
+        </div>
+        <div class="result-meta">
+          <div class="meta-tag">📖 Chapter <strong id="metaChapter">—</strong></div>
+          <div class="meta-tag">📑 Section <strong id="metaSection">—</strong></div>
+          <div class="meta-tag">🎯 Subheadings <strong id="metaSubheadings">—</strong></div>
+        </div>
+      </div>
+
+      <!-- Details grid -->
+      <div class="details-grid">
+        
+        <!-- GRI Decision Flow -->
+        <div class="detail-card full-width">
+          <div class="detail-title">
+            <span class="icon">⚖️</span>
+            GRI Decision Flow
+          </div>
+          <div class="gri-flow" id="griFlow"></div>
+        </div>
+
+        <!-- Verbatim Quotes -->
+        <div class="detail-card">
+          <div class="detail-title">
+            <span class="icon">📜</span>
+            Verbatim References
+          </div>
+          <div class="quote-list" id="quoteList"></div>
+        </div>
+
+        <!-- Alternatives -->
+        <div class="detail-card">
+          <div class="detail-title">
+            <span class="icon">🔀</span>
+            Alternatives Considered
+          </div>
+          <div class="alt-list" id="altList"></div>
+        </div>
+
+        <!-- Full Opinion -->
+        <div class="detail-card full-width">
+          <div class="detail-title">
+            <span class="icon">📋</span>
+            Full Classification Opinion
+          </div>
+          <pre class="opinion-text" id="opinionText"></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
