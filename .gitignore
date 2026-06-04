@@ -9,10 +9,8 @@ __pycache__/
 *$py.class
 
 # App-specific caches & local indices
-.index_cache.json
-backend/.index_cache.json
-data/
 *.log
+
 
 # OS files
 .DS_Store
